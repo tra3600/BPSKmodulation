@@ -1,33 +1,42 @@
 # BPSKmodulation
-programme télécom qui simule une modulation numérique de phase phase shift key modulation 
 
-La modulation par décalage de phase (Phase Shift Keying, PSK) est une technique de modulation numérique qui modifie la phase d'une porteuse pour représenter les données numériques. Il existe plusieurs types de PSK, tels que BPSK (Binary Phase Shift Keying), QPSK (Quadrature Phase Shift Keying), et d'autres variantes plus complexes.
+Simulation d'une chaîne de transmission numérique **BPSK** (Binary Phase Shift Keying) en Python :
 
-Pour illustrer cela, nous allons écrire un programme en Python qui simule la modulation BPSK, qui est la forme la plus simple de PSK. Nous utiliserons des bibliothèques comme NumPy pour les calculs numériques et Matplotlib pour la visualisation.
+bits → modulation → canal AWGN → démodulation cohérente → bits décodés
 
-Exemple de Code
-Prérequis
-Installer les bibliothèques nécessaires :
+## Installation
+
+```
 pip install numpy matplotlib
+```
 
-Explications
-Importation des Bibliothèques :
+## Utilisation
 
-numpy pour les calculs numériques.
-matplotlib.pyplot pour la visualisation.
-Fonction bpsk_modulation :
+```
+python modulationBPSK.py                          # affiche les figures
+python modulationBPSK.py --save figures           # enregistre les PNG (sans fenêtre)
+python modulationBPSK.py --bits 1011001 --ebn0 6  # séquence et Eb/N0 personnalisés
+python modulationBPSK.py --help
+```
 
-Prend en entrée une séquence de bits, la fréquence de la porteuse, le taux d'échantillonnage et la durée de chaque bit.
-Crée un vecteur de temps t pour la durée totale du signal.
-Génère une porteuse cosinus.
-Modifie la phase de la porteuse en fonction des bits : un bit 0 inverse la phase (multiplie par -1), un bit 1 conserve la phase.
-Retourne le vecteur de temps et le signal modulé.
-Fonction main :
+Le programme affiche les bits émis/décodés et trace :
+1. la chaîne (bits, signal modulé, signal bruité) ;
+2. la constellation BPSK en sortie du démodulateur ;
+3. le taux d'erreur binaire (TEB) simulé comparé à la théorie `Pb = ½·erfc(√(Eb/N0))`.
 
-Définit les paramètres de la simulation : séquence de bits, fréquence de la porteuse, taux d'échantillonnage, et durée de chaque bit.
-Appelle la fonction bpsk_modulation pour générer le signal modulé.
-Affiche le signal modulé en utilisant Matplotlib.
-Utilisation
-Exécutez le script Python.
-Le programme affichera le signal modulé BPSK correspondant à la séquence de bits spécifiée.
-Ce programme fournit une simulation de base de la modulation BPSK en Python, avec une visualisation du signal modulé. Vous pouvez ajuster les paramètres et la séquence de bits pour explorer différents scénarios de modulation.
+## Principe
+
+- bit 1 → `+cos(2π·fc·t)`, bit 0 → `−cos(2π·fc·t)` (déphasage de π) ;
+- bruit blanc gaussien calibré en Eb/N0 (dB) ;
+- démodulation par corrélation avec la porteuse sur chaque durée-bit, décision au signe.
+
+## Fonctions principales
+
+`bpsk_modulation`, `add_awgn`, `bpsk_demodulation`, `ber_theory`, `simulate_ber`.
+
+## Tests
+
+```
+pip install pytest
+pytest
+```
